@@ -1,0 +1,16 @@
+{
+    "train": true,
+    "predict": false,
+    "datadir": "./dataset",
+    "logdir": "./logs",
+    "dataname": "sample_upbit_daydata.csv",
+    "target_feature": "open",
+    "input_window": 200,
+    "output_window": 100,
+    "hidden_size": 50,
+    "stride": 1,
+    "epochs": 100,
+    "batch_size": 64,
+    "lr": 0.01,
+    "teacher_forcing": 0.7
+}
