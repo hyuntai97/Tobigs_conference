@@ -8,6 +8,10 @@ from dataset import WindowDataset
 from sklearn.preprocessing import MinMaxScaler
 import joblib
 
+
+def difference(data, interval):
+    return [data[i] - data[i - interval] for i in range(interval, len(data))]
+
 def get_dataloader(target_feature, data_root, log_dir, data_name, batch_size, input_window, output_window, train_rate, stride=1):
     '''
     ---Return--- 
@@ -43,8 +47,6 @@ def get_dataloader(target_feature, data_root, log_dir, data_name, batch_size, in
 
         return train_dataloader, valid_dataloader
 
-
-
     
     data_path = os.path.join(data_root, data_name)
     df = pd.read_csv(data_path)
@@ -53,12 +55,15 @@ def get_dataloader(target_feature, data_root, log_dir, data_name, batch_size, in
     df['index'] = pd.to_datetime(df['index'], format="%Y-%m-%d %H:%M:%S")
     df.set_index('index', inplace=True)
 
-    #-- train validation split 
+    #-- difference transform 
     ts_selected = df[target_feature]
-    train_size = int((len(ts_selected)-output_window) * train_rate)
-    valid_size = (len(ts_selected)-output_window)- train_size
-    train_data = np.array(ts_selected.iloc[:train_size]).reshape(-1,1)
-    valid_data = np.array(ts_selected.iloc[train_size:train_size+valid_size]).reshape(-1,1)
+    ts_diff = pd.Series(difference(ts_selected, 1))
+
+    #-- train validation split 
+    train_size = int((len(ts_diff)-output_window) * train_rate)
+    valid_size = (len(ts_diff)-output_window)- train_size
+    train_data = np.array(ts_diff.iloc[:train_size]).reshape(-1,1)
+    valid_data = np.array(ts_diff.iloc[train_size:train_size+valid_size]).reshape(-1,1)
 
     #-- normalize data
     scaler = MinMaxScaler()

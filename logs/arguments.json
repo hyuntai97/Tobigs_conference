@@ -16,5 +16,5 @@
     "batch_size": 64,
     "lr": 0.004,
     "weight_decay": 1e-05,
-    "teacher_forcing": 0.8
+    "teacher_forcing": 0.7
 }
